@@ -1,114 +1,114 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Routine Goblin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    * {
-      box-sizing: border-box;
+    .typing::after {
+      content: '|';
+      animation: blink 1s step-start infinite;
     }
-    body {
-      margin: 0;
-      font-family: system-ui, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      background: #ffffff;
+    @keyframes blink {
+      50% { opacity: 0; }
     }
-    header {
-      margin-top: 80px;
-      text-align: center;
-    }
-    header h1 {
-      font-size: 1.8rem;
-      margin-bottom: 0.2rem;
-    }
-    header small {
-      font-size: 0.9rem;
-      color: #666;
-    }
-    #chat {
-      width: 100%;
-      max-width: 700px;
-      padding: 1rem;
-      margin-bottom: 80px;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .message {
-      background: #f5f5f5;
-      border-radius: 10px;
-      padding: 1rem;
-      white-space: pre-wrap;
-    }
-    .message.bot {
-      background: #f0f0ff;
-    }
-    .input-box {
-      position: fixed;
-      bottom: 20px;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-    }
-    .input-container {
-      display: flex;
-      align-items: center;
-      width: 100%;
-      max-width: 700px;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 20px;
-      padding: 10px 16px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-    .input-container input {
-      flex-grow: 1;
-      border: none;
-      outline: none;
-      font-size: 1rem;
-    }
-    .input-container button {
-      background: #000;
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 32px;
-      height: 32px;
-      cursor: pointer;
-      font-size: 1.1rem;
-      margin-left: 10px;
+    [data-theme="dark"] {
+      --tw-bg-opacity: 1;
+      --tw-text-opacity: 1;
+      background-color: rgb(17 24 39 / var(--tw-bg-opacity));
+      color: rgb(255 255 255 / var(--tw-text-opacity));
     }
   </style>
 </head>
-<body>
-  <header>
-    <h1>Routine Goblin</h1>
-    <small>By Yuri Alves 🧙‍♂️</small>
+<body class="bg-white dark:bg-gray-900 min-h-screen flex flex-col items-center font-sans text-black dark:text-white">
+  <header class="mt-6 text-center w-full max-w-2xl">
+    <div class="flex justify-between items-center">
+      <h1 class="text-3xl font-bold">Routine Goblin</h1>
+      <div>
+        <label class="mr-2">Theme:</label>
+        <select id="themeToggle" class="bg-gray-200 dark:bg-gray-800 text-black dark:text-white rounded px-2 py-1">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+         <button id="clear-chat" class="bg-red-200 dark:bg-red-700 px-3 py-1 rounded">🗑️ Clear Chat</button>
+      </div>
+    </div>
+  
   </header>
 
-  <div id="chat"></div>
+  <main id="chat" class="w-full max-w-2xl p-4 flex flex-col gap-4 mt-6 mb-32"></main>
 
-  <div class="input-box">
-    <div class="input-container">
-      <input type="text" id="user-input" placeholder="Ask anything..." />
-      <button id="send">↑</button>
+  <div class="fixed bottom-6 w-full flex justify-center">
+    <div class="flex items-center w-full max-w-2xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-full px-4 py-2 shadow-md">
+      <select id="avatarPicker" class="mr-2 text-sm px-1 py-1 rounded bg-gray-100 dark:bg-gray-700 text-black dark:text-white">
+        <option value="U">🙂</option>
+        <option value="🐸">🐸</option>
+        <option value="🦊">🦊</option>
+        <option value="👽">👽</option>
+        <option value="👾">👾</option>
+      </select>
+      <input id="user-input" type="text" placeholder="Ask anything..." class="flex-grow border-none outline-none text-base bg-transparent text-black dark:text-white" />
+      <button id="send" class="ml-2 bg-black text-white rounded-full w-8 h-8 flex items-center justify-center text-xl">↑</button>
     </div>
   </div>
+  <footer>
+      <p class="text-gray-500 dark:text-gray-300 text-sm">By <a href="https://yuriguernsey.com" target="_blank">Yuri Alves 🧙‍♂️</a></p>
+  </footer>
 
   <script>
     const chat = document.getElementById('chat');
     const input = document.getElementById('user-input');
     const sendBtn = document.getElementById('send');
+    const avatarPicker = document.getElementById('avatarPicker');
+    let userAvatar = avatarPicker.value;
+          const clearChat = document.getElementById('clear-chat');
+    avatarPicker.addEventListener('change', () => {
+      userAvatar = avatarPicker.value;
+    });
 
-    function appendMessage(text, isBot = false) {
+    document.getElementById('themeToggle').addEventListener('change', (e) => {
+      document.documentElement.setAttribute('data-theme', e.target.value);
+      localStorage.setItem('theme', e.target.value);
+    });
+
+    // Load theme and messages from localStorage
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      document.getElementById('themeToggle').value = savedTheme;
+    }
+
+    let messages = JSON.parse(localStorage.getItem('routineMessages')) || [
+      { role: "system", content: "You are Routine Goblin, a friendly and nosy AI that asks questions, builds daily/weekly schedules, and at the end asks if the user wants to download the ICS file. If yes, include an ICS formatted response in a Markdown block." }
+    ];
+
+    // Re-render stored chat
+    const renderStoredMessages = () => {
+      messages.forEach((msg, i) => {
+        if (msg.role === 'system') return;
+        appendMessage(msg.content, msg.role === 'assistant');
+      });
+    };
+
+    renderStoredMessages();
+
+    function appendMessage(text, isBot = false, isTyping = false) {
       const msg = document.createElement('div');
-      msg.className = 'message' + (isBot ? ' bot' : '');
-      msg.textContent = text;
+      msg.className = `flex ${isBot ? 'justify-start' : 'justify-end'}`;
+
+      const bubble = document.createElement('div');
+      bubble.className = `rounded-xl p-3 max-w-[75%] whitespace-pre-wrap text-sm ${isBot ? 'bg-blue-100 dark:bg-blue-800 text-left' : 'bg-gray-200 dark:bg-gray-700 text-right'}`;
+
+      const avatar = document.createElement('div');
+      avatar.className = 'w-8 h-8 bg-gray-400 dark:bg-gray-600 rounded-full text-white flex items-center justify-center text-sm font-bold mr-2';
+      avatar.textContent = isBot ? 'RG' : userAvatar;
+
+      if (isBot) msg.appendChild(avatar);
+      bubble.textContent = text;
+      if (isTyping) bubble.classList.add('typing');
+      msg.appendChild(bubble);
+      if (!isBot) msg.appendChild(avatar);
       chat.appendChild(msg);
       chat.scrollTop = chat.scrollHeight;
     }
@@ -116,31 +116,47 @@
     async function sendMessage() {
       const text = input.value.trim();
       if (!text) return;
-
       appendMessage(text, false);
+      messages.push({ role: 'user', content: text });
+      localStorage.setItem('routineMessages', JSON.stringify(messages));
       input.value = '';
 
-      appendMessage('Routine Goblin is thinking...', true);
+      appendMessage('Routine Goblin is thinking...', true, true);
 
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [
-            { role: "system", content: "You are Routine Goblin, a friendly and nosy AI who creates daily and weekly schedules for people by asking them lots of questions and then generating a clear routine layout. Ask if they want the file at the end." },
-            { role: "user", content: text }
-          ]
-        }),
+        body: JSON.stringify({ messages }),
       });
 
       const data = await response.json();
-      chat.lastChild.textContent = data.choices?.[0]?.message?.content || "Hmm... something went wrong.";
+      const msg = data.choices?.[0]?.message?.content || "Hmm... something went wrong.";
+      chat.lastChild.remove();
+      appendMessage(msg, true);
+      messages.push({ role: 'assistant', content: msg });
+      localStorage.setItem('routineMessages', JSON.stringify(messages));
+
+      const match = msg.match(/```ics\n([\s\S]*?)```/);
+      if (match) {
+        const blob = new Blob([match[1]], { type: 'text/calendar' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'routine-goblin.ics';
+        link.textContent = 'Download your routine (.ics)';
+        link.className = 'text-blue-600 underline text-sm mt-1 downloadlink';
+        chat.appendChild(link);
+      }
     }
 
     sendBtn.onclick = sendMessage;
     input.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') sendMessage();
     });
+
+      clearChat.onclick = () => {
+        chat.innerHTML = '';
+        localStorage.removeItem('routineMessages');
+      };
   </script>
 </body>
 </html>
